@@ -1,0 +1,158 @@
+{
+	"crop.json": "crop.json",
+	"site.json": "site.json",
+	"climate.csv": "climate.csv",
+
+	"climate.csv-options": {
+		"_start-date": "1981-01-01",
+		"_end-date": "2012-12-31",
+		"no-of-climate-file-header-lines": 2,
+		"csv-separator": ",",
+		"header-to-acd-names": {}
+	},
+	
+	"debug?": false,
+	"path-to-output": "./",
+	"include-file-base-path": "./",
+	
+	"output": { 
+	  "write-file?": false,
+		"file-name": "out.csv",
+	
+		"csv-options": {
+			"include-header-row": true,
+			"include-units-row": true,
+			"csv-separator": ","
+		},
+		
+		"events": [
+			"crop", [
+				["Crop", "LAST"]			
+			],
+
+			"daily", [
+				"Crop",
+				"LAI",
+				"Globrad"
+			]			
+		],
+
+		"1 events": [
+			"crop", [
+				["CM-count", "LAST"],
+				["Year|s-year", "FIRST"],
+				["Year|h-year", "LAST"], 
+				["Crop", "LAST"], 
+				["DOY|sowing", "FIRST"], 
+				["DOY|harvest", "LAST"]				
+			],
+
+			"daily", [
+				"Date",
+				"Year",
+				"DOY",
+				"CM-count",
+				"Crop",
+				"LAI",
+				"Globrad"
+			]			
+		],
+
+		"__output for the maps": "",
+		"_events": [
+			"crop", [
+				["CM-count", "LAST"],
+				["Year|s-year", "FIRST"],
+				["Year|h-year", "LAST"], 
+				["Crop", "LAST"], 
+				["DOY|sowing", "FIRST"], 
+				["DOY|harvest", "LAST"], 
+				["Yield", "LAST"], 
+				["NDef|NDefavg", "AVG"], 
+				["TraDef|TraDefavg", "AVG"],
+				["NFert", "SUM"],
+				["NLeach", "SUM"],
+				["PercolationRate", 16, "SUM"],
+				["Nmin", [1, 3, "SUM"], "SUM"],
+				["SumNUp", "LAST"],
+				["Count|length", "SUM"],
+				["Precip|avg-precip", "AVG"],
+				["Tavg|avg-tavg", "AVG"],
+				["Tmax|avg-tmax", "AVG"],
+				["Tmax>=40", "SUM"]
+			],
+
+			{"at": "anthesis"}, [
+				"CM-count",
+				"Crop",
+				["DOY|anthesis"]
+			],
+
+			{"at": "maturity"}, [
+				"CM-count",
+				"Crop",
+				["DOY|matur"]
+			],
+
+			{"while": ["Stage", "=", 1]},[
+				["CM-count", "LAST"],
+				["Crop", "LAST"],
+				["TraDef|TraDef1", "AVG"]
+			],
+
+			{"while": ["Stage", "=", 2]},[
+				["CM-count", "LAST"],
+				["Crop", "LAST"],
+				["TraDef|TraDef2", "AVG"]
+			],
+
+			{"while": ["Stage", "=", 3]},[
+				["CM-count", "LAST"],
+				["Crop", "LAST"],
+				["TraDef|TraDef3", "AVG"]
+			],
+
+			{"while": ["Stage", "=", 4]},[
+				["CM-count", "LAST"],
+				["Crop", "LAST"],
+				["TraDef|TraDef4", "AVG"]
+			],
+
+			{"while": ["Stage", "=", 5]},[
+				["CM-count", "LAST"],
+				["Crop", "LAST"],
+				["TraDef|TraDef5", "AVG"]
+			],
+
+			{"while": ["Stage", "=", 6]},[
+				["CM-count", "LAST"],
+				["Crop", "LAST"],
+				["TraDef|TraDef6", "AVG"]
+			]
+		]
+	},
+	
+	"NumberOfLayers": 20,
+	"LayerThickness": [0.1, "m"],
+
+	"UseSecondaryYields": true,
+	"NitrogenResponseOn": false,
+	"WaterDeficitResponseOn": false,
+	"EmergenceMoistureControlOn": false,
+	"EmergenceFloodingControlOn": false,
+
+	"UseAutomaticIrrigation": false,
+	"AutoIrrigationParams": {
+		"irrigationParameters": {
+			"nitrateConcentration": [0, "mg dm-3"],
+			"sulfateConcentration": [0, "mg dm-3"]
+		},
+		"amount": [20, "mm"],
+		"threshold": 0.35
+	},
+
+	"UseNMinMineralFertilisingMethod": false,
+	"NMinUserParams": { "min": 25, "max": 90, "delayInDays": 20 },
+	"NMinFertiliserPartition": ["include-from-file", "monica-parameters/mineral-fertilisers/AN.json"],
+	"JulianDayAutomaticFertilising": 89
+}

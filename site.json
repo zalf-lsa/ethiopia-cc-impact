@@ -1,0 +1,21 @@
+{
+  "SiteParameters": {
+    "Latitude": -13.47,
+    "Slope": 0,
+    "HeightNN": [210 , "m"],
+    "NDeposition": 20,
+		
+    "SoilProfileParameters": [
+        ]
+  },
+	
+  "SoilTemperatureParameters": ["include-from-file", "monica-parameters/general/soil-temperature.json"],
+	"EnvironmentParameters": {
+    "=": ["include-from-file", "monica-parameters/general/environment.json"],
+    "LeachingDepth": 1.6,
+    "WindSpeedHeight": 2.0
+  },
+  "SoilOrganicParameters": ["include-from-file", "monica-parameters/general/soil-organic.json"],
+  "SoilTransportParameters": ["include-from-file", "monica-parameters/general/soil-transport.json"],
+  "SoilMoistureParameters": ["include-from-file", "monica-parameters/general/soil-moisture.json"]
+}
