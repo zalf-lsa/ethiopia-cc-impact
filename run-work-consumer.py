@@ -424,7 +424,7 @@ def main():
 
     config = {
         "port": "7777",
-        "server": "cluster2",
+        "server": "cluster3", #"10.10.26.34", #"cluster3",
         "user": "berg-lc"
     }
     if len(sys.argv) > 1:
@@ -435,16 +435,12 @@ def main():
 
     paths = PATHS[config["user"]]
 
-    local_run = False
     write_normal_output_files = True
     
     i = 0
     context = zmq.Context()
     socket = context.socket(zmq.PULL)
-    if local_run:
-        socket.connect("tcp://localhost:" + config["port"])
-    else:
-        socket.connect("tcp://" + config["server"] + ":" + config["port"])    
+    socket.connect("tcp://" + config["server"] + ":" + config["port"])    
     socket.RCVTIMEO = 10000
     leave = False
     

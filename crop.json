@@ -3,7 +3,7 @@
 		"Meko": {
 			"is-winter-crop": false,
 			"cropParams": {
-				"species": ["include-from-file", "monica-parameters/crops/sorghum.json"],
+				"species": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact//sorghum.json"],
 				"cultivar": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/Meko.json"]
 			},
 			"residueParams": ["include-from-file", "monica-parameters/crop-residues/sorghum.json"]
@@ -11,7 +11,7 @@
 		"Teshale": {
 			"is-winter-crop": false,
 			"cropParams": {
-				"species": ["include-from-file", "monica-parameters/crops/sorghum.json"],
+				"species": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact//sorghum.json"],
 				"cultivar": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/Teshale.json"]
 			},
 			"residueParams": ["include-from-file", "monica-parameters/crop-residues/sorghum.json"]
@@ -27,30 +27,30 @@
 		{
 			 "worksteps": [
 				 { 
-					 "date": "2011-07-14", 
+					 "date": "0000-07-14", 
 					 "type": "Sowing", 
 					 "crop": ["ref", "crops", "PLACE CROP HERE"],
 					 "PlantDensity": 7
 				},
 				 {
-					 "date": "2011-07-14",
+					 "date": "0000-07-14",
 					 "type": "MineralFertilization",
 					 "amount": [72, "kg N"],
 					 "partition": ["ref", "fert-params", "AN"]
 				 },
 				 {
-					 "date": "2011-07-14",
+					 "date": "0000-07-14",
 					 "type": "MineralFertilization",
 					 "amount": [53, "kg N"],
 					 "partition": ["ref", "fert-params", "AN"]
 				 },
 				 {			
-					 "date": "2011-08-20",
+					 "date": "0000-08-20",
 					 "type": "MineralFertilization",
 					 "amount": [25, "kg N"],
 					 "partition": ["ref", "fert-params", "AN"]
 				 },
-				 { "date": "2011-12-14", "type": "Harvest" }
+				 { "date": "0000-12-14", "type": "Harvest" }
 			 ]
 		}
 		 

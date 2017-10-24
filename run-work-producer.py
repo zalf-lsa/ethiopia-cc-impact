@@ -45,25 +45,27 @@ PATHS = {
     },
     "berg-xps15": {
         "include-file-base-path": "C:/Users/berg.ZALF-AD/GitHub",
-        "local-path-to-archive": "P:/ethiopia-cc-impact/",
-        "local-path-to-repository": "C:/Users/berg.ZALF-AD/GitHub/icp-sorghum-climate-change-impact/"
+        "local-path-to-archive": "A:/data/ethiopia/",
+        "local-path-to-repository": "C:/Users/berg.ZALF-AD/GitHub/ethiopia-cc-impact/",
+        "cluster-path-to-archive": "/archiv-daten/md/data/ethiopia/"
     },
     "berg-lc": {
         "include-file-base-path": "C:/Users/berg.ZALF-AD/GitHub",
-        "local-path-to-archive": "P:/ethiopia-cc-impact/",
-        "local-path-to-repository": "C:/Users/berg.ZALF-AD/GitHub/icp-sorghum-climate-change-impact/"
+        "local-path-to-archive": "A:/data/ethiopia/",
+        "local-path-to-repository": "C:/Users/berg.ZALF-AD/GitHub/ethiopia-cc-impact/",
+        "cluster-path-to-archive": "/archiv-daten/md/data/ethiopia/"
     }
 }
 
-PATH_TO_ARCHIVE_DIR = "/archiv-daten/md/projects/ethiopia-cc-impact/"
 
 def main():
     "main function"
 
     config = {
         "port": "6666",
-        "server": "cluster2",
-        "user": "berg-lc"
+        "server": "cluster3",
+        "user": "berg-lc",
+        "local-paths": "false"
     }
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
@@ -71,15 +73,12 @@ def main():
             if k in config:
                 config[k] = v 
 
-    local_run = False
     context = zmq.Context()
     socket = context.socket(zmq.PUSH)
-    if local_run:
-        socket.connect("tcp://localhost:" + config["port"])
-    else:
-        socket.connect("tcp://" + config["server"] + ":" + config["port"])
+    socket.connect("tcp://" + config["server"] + ":" + config["port"])
     
     paths = PATHS[config["user"]]
+    use_local_paths = config["local-paths"] == "true"
 
     with open("sim.json") as _:
         sim = json.load(_)
@@ -92,28 +91,31 @@ def main():
 
     sim["include-file-base-path"] = paths["include-file-base-path"]
 
+    rcps = [
+        "baseline",
+        "rcp2p6",
+        "rcp4p5",
+        "rcp6p0",
+        "rcp8p5"
+    ]
 
-    #cdict = {}
-    def create_interpolator(path_to_climate_dir, wgs84, utm37n):
-        "read an ascii grid into a map, without the no-data values"
+    def create_interpolator(path_to_climate_dir, scenario, wgs84, utm37n):
+        "create interpolation object from some dir with climate data"
 
         points = []
         values = []
-        for filename in os.listdir(path_to_climate_dir):
+        for filename in os.listdir(path_to_climate_dir + scenario + "/"):
+            #if filename[:len(scenario)] != scenario:
+            #    continue
 
-            if filename[:8] != "baseline":
-                continue
-
-            #parse from "baseline _ 3.25 _ 33.25.csv"
+            #parse from "baseline_3.25_33.25.csv"
             parts = filename.split("_")
-            lat = float(parts[1].strip())
-            lon = float(parts[2][:-4].strip())
+            lat = float(parts[1]) #float(parts[1].strip())
+            lon = float(parts[2][:-4]) #float(parts[2][:-4].strip())
 
-            #cdict[(row, col)] = (clat, clon)
             r, h = transform(wgs84, utm37n, lon, lat)
             #xlon, xlat = transform(utm37n, wgs84, r, h)
             points.append([h, r])
-            #values.append(10000 * int(lat*100) + int(lon*100))
             values.append((lat, lon))
             #print "lat:", lat, "lon:", lon, "h:", h, "r:", r, "val:", values[len(values)-1]
 
@@ -122,7 +124,7 @@ def main():
 
     wgs84 = Proj(init="epsg:4326")
     utm37n = Proj(init="epsg:20137")
-    interpol = create_interpolator(paths["local-path-to-archive"] + "Climate data/Delete/baseline/", wgs84, utm37n)
+    interpol = create_interpolator(paths["local-path-to-archive"] + "climate/ipsl-cm5a-lr/", "baseline", wgs84, utm37n)
 
 
     def create_soil_profiles(path_to_soil_csv):
@@ -145,10 +147,11 @@ def main():
                 })
             return profiles
 
-    profiles = create_soil_profiles(paths["local-path-to-archive"] + "Soil data/Ethio_soil.csv")
-            
+    profiles = create_soil_profiles(paths["local-path-to-archive"] + "soil/soil.csv")
+           
     envs = []
 
+    # pre-build envs for the two possible crops
     crop["cropRotation"][0]["worksteps"][0]["crop"][2] = "Meko"
     envs.append(monica_io.create_env_json_from_json_config({
         "crop": crop,
@@ -168,13 +171,15 @@ def main():
     start_send = time.clock()
     sent_env_count = 0
 
+    rcp = rcps[0]
+
     for (lat, lon), profile in profiles.iteritems():
 
         sr, sh = transform(wgs84, utm37n, lon, lat)
         (clat, clon) = interpol(sh, sr)
 
         for env in envs:
-            env["SoilProfileParameters"] = profile
+            env["params"]["siteParameters"]["SoilProfileParameters"] = profile
             env["params"]["siteParameters"]["Latitude"] = lat
 
             #set climate file - read by the server
@@ -182,10 +187,8 @@ def main():
             #env["csvViaHeaderOptions"]["start-date"] = sim["start-date"].replace("1981", str(p["start_year"]))
             #env["csvViaHeaderOptions"]["end-date"] = sim["end-date"].replace("2012", str(p["end_year"]))
             #note that the climate file content is csv like, despite the extension .asc
-            if local_run:
-                env["pathToClimateCSV"] = paths["local-path-to-archive"] + "Climate data/Delete/climate data/rcp2p6_et_2010_2039 _ " + str(clat) + " _ " + str(clon) + " .csv"
-            else:
-                env["pathToClimateCSV"] = PATH_TO_ARCHIVE_DIR + "Climate data/Delete/climate data/rcp2p6_et_2010_2039 _ " + str(clat) + " _ " + str(clon) + " .csv" 
+            env["pathToClimateCSV"] = paths["local-path-to-archive" if use_local_paths else "cluster-path-to-archive"] \
+            + "climate/ipsl-cm5a-lr/" + rcp + "/" + rcp + "_" + str(clat) + "_" + str(clon) + ".csv"
 
             env["customId"] = \
             env["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["cultivar"]["CultivarName"] \
@@ -196,12 +199,7 @@ def main():
             print "sent env ", sent_env_count, " customId: ", env["customId"]
             sent_env_count += 1
 
-            #if i > 150: #fo test purposes
-            #    return
-
-    stop_send = time.clock()
-
-    print "sending ", sent_env_count, " envs took ", (stop_send - start_send), " seconds"
+    print "sending", sent_env_count, "envs took", (time.clock() - start_send), "seconds"
     
 
 main()
