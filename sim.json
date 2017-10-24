@@ -141,7 +141,7 @@
 	"EmergenceMoistureControlOn": false,
 	"EmergenceFloodingControlOn": false,
 
-	"UseAutomaticIrrigation": false,
+	"UseAutomaticIrrigation": true,
 	"AutoIrrigationParams": {
 		"irrigationParameters": {
 			"nitrateConcentration": [0, "mg dm-3"],
