@@ -3,7 +3,7 @@
 		"Meko": {
 			"is-winter-crop": false,
 			"cropParams": {
-				"species": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact//sorghum.json"],
+				"species": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/sorghum.json"],
 				"cultivar": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/Meko.json"]
 			},
 			"residueParams": ["include-from-file", "monica-parameters/crop-residues/sorghum.json"]
@@ -11,7 +11,7 @@
 		"Teshale": {
 			"is-winter-crop": false,
 			"cropParams": {
-				"species": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact//sorghum.json"],
+				"species": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/sorghum.json"],
 				"cultivar": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/Teshale.json"]
 			},
 			"residueParams": ["include-from-file", "monica-parameters/crop-residues/sorghum.json"]
@@ -22,39 +22,66 @@
 		"U": ["include-from-file", "monica-parameters/mineral-fertilisers/U.json"],
 		"AN": ["include-from-file", "monica-parameters/mineral-fertilisers/AN.json"]
 	}, 
-
-	"cropRotation": [ 
-		{
-			 "worksteps": [
-				 { 
-					 "date": "0000-07-14", 
-					 "type": "Sowing", 
-					 "crop": ["ref", "crops", "PLACE CROP HERE"],
-					 "PlantDensity": 7
-				},
-				 {
-					 "date": "0000-07-14",
-					 "type": "MineralFertilization",
-					 "amount": [72, "kg N"],
-					 "partition": ["ref", "fert-params", "AN"]
-				 },
-				 {
-					 "date": "0000-07-14",
-					 "type": "MineralFertilization",
-					 "amount": [53, "kg N"],
-					 "partition": ["ref", "fert-params", "AN"]
-				 },
-				 {			
-					 "date": "0000-08-20",
-					 "type": "MineralFertilization",
-					 "amount": [25, "kg N"],
-					 "partition": ["ref", "fert-params", "AN"]
-				 },
-				 { "date": "0000-12-14", "type": "Harvest" }
-			 ]
+	   
+	"cropRotation": {
+		"meko": ["ref", "crops", "Meko"],
+		"teshale": ["ref", "crops", "Teshale"],
+		"automatic-sowing": { 
+			"type": "AutomaticSowing", 
+			"crop": "",
+			"earliest-date": "0000-xx-xx",
+			"latest-date": "0000-xx-xx",
+			"min-temp": 18.5,
+			"days-in-temp-window": 14,
+			"min-%-asw": 0,
+			"max-%-asw": 100,
+			"max-3d-precip-sum": 2,
+			"max-curr-day-precip": 0.1,
+			"temp-sum-above-base-temp": 0,
+			"base-temp": 0,
+	
+			"PlantDensity": 7
+		},
+		"static-sowing": { 
+			"date": "0000-07-14", 
+			"type": "Sowing", 
+			"crop": "",
+			"PlantDensity": 7
+		},
+		"rest-worksteps": [
+			{
+				"type": "MineralFertilization",
+				"amount": [0, "kg N"],
+				"partition": ["ref", "fert-params", "AN"],
+				"after": "Sowing"
+			},
+			{
+				"type": "MineralFertilization",
+				"amount": [0, "kg N"],
+				"partition": ["ref", "fert-params", "U"],
+				"after": "Sowing"
+			},
+			{			
+				"type": "MineralFertilization",
+				"amount": [0, "kg N"],
+				"partition": ["ref", "fert-params", "U"],
+				"after": "Sowing",
+				"days": 30
+			},
+			{ 
+			   "type": "AutomaticHarvest", 
+			   "latest-date": "0000-12-31",
+			   "min-%-asw": 0,
+			   "max-%-asw": 150,
+			   "max-3d-precip-sum": 999,
+			   "max-curr-day-precip": 999,
+			   "harvest-time": "maturity"
+		   }
+		],
+		"cultivation-method": {
+			"worksteps": []
 		}
-		 
-	 ],
+	},
 
 	"CropParameters": ["include-from-file", "monica-parameters/general/crop.json"]
 }
