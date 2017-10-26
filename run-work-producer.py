@@ -241,7 +241,7 @@ def main():
         "return avg onsets for given elevation"
         d = elevation_range(elevation)["onsets"]
         avg_doy = (d["from"].timetuple().tm_yday + d["to"].timetuple().tm_yday) // 2
-        return (date(2017, 1, 1) + timedelta(days=avg_doy)).strftime("0000-%m-%d")
+        return (date(2017, 1, 1) + timedelta(days=avg_doy-1)).strftime("0000-%m-%d")
     
 
 
@@ -275,7 +275,7 @@ def main():
                         templates["rest-worksteps"][1]["amount"][0] = float(fert["U"]) / 2
                         templates["rest-worksteps"][2]["amount"][0] = float(fert["U"]) / 2
                     elif adaptation_option["fertilizer"] == "auto":
-                        print "to be done"
+                        print "fertilizer auto: to be done"
 
                     # set plant density
                     plant_density = 0
@@ -283,13 +283,13 @@ def main():
                         pd_range = elevation_range(elevation)["plant-density"]
                         plant_density = (pd_range["from"] + pd_range["to"]) // 2
                     elif adaptation_option["plant-density"] == "increased":
-                        print "to be done"
+                        print "plant density increased: to be done"
 
                     # set cycle length
                     if adaptation_option["cycle-length"] == "standard":
-                        print "to be done"
+                        print "cycle length standard: to be done"
                     elif adaptation_option["plant-density"] == "increased":
-                        print "to be done"
+                        print "cycle length increased: to be done"
 
                     # insert static sowing
                     if adaptation_option["sowing"] == "recommended|avg-static-elevation-onsets":
@@ -314,7 +314,7 @@ def main():
                         env["cropRotation"] = []
                         for year in sorted(year_to_onset.keys()):
                             cm = templates["cultivation-method"].deepcopy()
-                            onset_date = (date(2017, 1, 1) + timedelta(days=year_to_onset[year])).strftime("0000-%m-%d")
+                            onset_date = (date(2017, 1, 1) + timedelta(days=year_to_onset[year]-1)).strftime("0000-%m-%d")
                             cm["worksteps"][0]["date"] = onset_date
                             env["cropRotation"].append(cm)
 
@@ -336,7 +336,7 @@ def main():
                     + "|" + str(lat) \
                     + "|" + str(lon) \
                     + "|" + str(rcp) \
-                    + "|" + str(adaptation_option).replace("|", "/") 
+                    + "|" + "-" #str(adaptation_option).replace("|", "/") 
 
                     socket.send_json(env) 
                     print "sent env ", sent_env_count, " customId: ", env["customId"]
