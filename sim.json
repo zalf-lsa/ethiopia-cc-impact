@@ -25,6 +25,14 @@
 			"csv-separator": ","
 		},
 		
+		"1 events": [
+			"daily", [
+				"Date",
+				"Crop",
+				"TraDef"
+			]
+		],
+
 		"events": [
 			"crop", [
 				["Year", "LAST"],
@@ -74,8 +82,8 @@
 	"LayerThickness": [0.1, "m"],
 
 	"UseSecondaryYields": true,
-	"NitrogenResponseOn": false,
-	"WaterDeficitResponseOn": false,
+	"NitrogenResponseOn": true,
+	"WaterDeficitResponseOn": true,
 	"EmergenceMoistureControlOn": false,
 	"EmergenceFloodingControlOn": false,
 

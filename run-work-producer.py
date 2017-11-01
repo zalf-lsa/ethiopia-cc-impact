@@ -200,7 +200,7 @@ def main():
     
 
     adaptation_options = []
-    for sowing in ["recommended|avg-static-elevation-onsets", "recommended|dynamic-elevation-onsets", "calculated-onsets"]:
+    for sowing in ["recommended/avg-static-elevation-onsets", "recommended/dynamic-elevation-onsets", "calculated-onsets"]:
         for n_fert in ["recommended", "auto"]:
             for plant_density in ["recommended", "increased"]:
                 for cycle_length in ["standard", "longer"]:
@@ -292,14 +292,14 @@ def main():
                         print "cycle length increased: to be done"
 
                     # insert static sowing
-                    if adaptation_option["sowing"] == "recommended|avg-static-elevation-onsets":
+                    if adaptation_option["sowing"] == "recommended/avg-static-elevation-onsets":
                         templates["static-sowing"]["crop"] = templates[variety]
                         templates["static-sowing"]["date"] = avg_static_elevation_onsets(elevation)
                         templates["static-sowing"]["PlantDensity"] = plant_density
                         templates["cultivation-method"]["worksteps"] = [templates["static-sowing"]] + templates["rest-worksteps"]
                         env["cropRotation"] = [templates["cultivation-method"]]
 
-                    elif adaptation_option["sowing"] == "recommended|dynamic-elevation-onsets":
+                    elif adaptation_option["sowing"] == "recommended/dynamic-elevation-onsets":
                         templates["automatic-sowing"]["crop"] = templates[variety]
                         templates["automatic-sowing"]["earliest-date"] = avg_static_elevation_onsets(elevation)
                         templates["static-sowing"]["PlantDensity"] = plant_density
@@ -336,7 +336,10 @@ def main():
                     + "|" + str(lat) \
                     + "|" + str(lon) \
                     + "|" + str(rcp) \
-                    + "|" + "-" #str(adaptation_option).replace("|", "/") 
+                    + "|" + adaptation_option["sowing"] \
+                    + "|" + adaptation_option["fertilizer"] \
+                    + "|" + adaptation_option["plant-density"] \
+                    + "|" + adaptation_option["cycle-length"]
 
                     socket.send_json(env) 
                     print "sent env ", sent_env_count, " customId: ", env["customId"]
