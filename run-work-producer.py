@@ -35,9 +35,10 @@ from pyproj import Proj, transform
 
 PATHS = {
     "fikadu": {
-        "include-file-base-path": "C:/GitHub",
-        "local-path-to-archive": "Z:/md/projects/carbiocial/",
-        "local-path-to-repository": "C:/GitHub/carbiocial-2017/"
+        "include-file-base-path": "C:/Users/fikadu/Documents/GitHub",
+        "local-path-to-archive": "Z:/data/ethiopia/",
+        "local-path-to-repository": "C:/Users/fikadu/Documents/GitHub/ethiopia-cc-impact/",
+        "cluster-path-to-archive": "/archiv-daten/md/data/ethiopia/"
     },
     "stella": {
         "include-file-base-path": "C:/Users/stella/Documents/GitHub",
@@ -64,8 +65,8 @@ def main():
 
     config = {
         "port": "6666",
-        "server": "cluster3",
-        "user": "berg-lc",
+        "server": "cluster2",
+        "user": "fikadu",
         "local-paths": "false"
     }
     if len(sys.argv) > 1:
@@ -200,16 +201,14 @@ def main():
     
 
     adaptation_options = []
-    for sowing in ["recommended/avg-static-elevation-onsets", "recommended/dynamic-elevation-onsets", "calculated-onsets"]:
-        for n_fert in ["recommended", "auto"]:
-            for plant_density in ["recommended", "increased"]:
-                for cycle_length in ["standard", "longer"]:
-                    adaptation_options.append({
-                        "sowing": sowing,
-                        "fertilizer": n_fert,
-                        "plant-density": plant_density,
-                        "cycle-length": cycle_length
-                    })
+    for sowing in ["recommended/dynamic-elevation-onsets", "calculated-onsets", "recommended/avg-static-elevation-onsets"]:
+        for n_fert in ["recommended"]:#, "auto"]:
+            for cycle_length in ["standard"]:#, "longer"]:
+                adaptation_options.append({
+                    "sowing": sowing,
+                    "fertilizer": n_fert,
+                    "cycle-length": cycle_length
+                })
 
     elevation_ranges = {
         "<1600": { 
@@ -277,14 +276,6 @@ def main():
                     elif adaptation_option["fertilizer"] == "auto":
                         print "fertilizer auto: to be done"
 
-                    # set plant density
-                    plant_density = 0
-                    if adaptation_option["plant-density"] == "recommended":
-                        pd_range = elevation_range(elevation)["plant-density"]
-                        plant_density = (pd_range["from"] + pd_range["to"]) // 2
-                    elif adaptation_option["plant-density"] == "increased":
-                        print "plant density increased: to be done"
-
                     # set cycle length
                     if adaptation_option["cycle-length"] == "standard":
                         print "cycle length standard: to be done"
@@ -295,25 +286,24 @@ def main():
                     if adaptation_option["sowing"] == "recommended/avg-static-elevation-onsets":
                         templates["static-sowing"]["crop"] = templates[variety]
                         templates["static-sowing"]["date"] = avg_static_elevation_onsets(elevation)
-                        templates["static-sowing"]["PlantDensity"] = plant_density
                         templates["cultivation-method"]["worksteps"] = [templates["static-sowing"]] + templates["rest-worksteps"]
                         env["cropRotation"] = [templates["cultivation-method"]]
 
                     elif adaptation_option["sowing"] == "recommended/dynamic-elevation-onsets":
                         templates["automatic-sowing"]["crop"] = templates[variety]
-                        templates["automatic-sowing"]["earliest-date"] = avg_static_elevation_onsets(elevation)
-                        templates["static-sowing"]["PlantDensity"] = plant_density
+                        dates = elevation_range(elevation)["onsets"]
+                        templates["automatic-sowing"]["earliest-date"] = dates["from"].strftime("0000-%m-%d")
+                        templates["automatic-sowing"]["latest-date"] = dates["to"].strftime("0000-%m-%d")
                         templates["cultivation-method"]["worksteps"] = [templates["automatic-sowing"]] + templates["rest-worksteps"]
                         env["cropRotation"] = [templates["cultivation-method"]]
 
                     elif adaptation_option["sowing"] == "calculated-onsets":
                         year_to_onset = onsets[(clat, clon)]
                         templates["static-sowing"]["crop"] = templates[variety]
-                        templates["static-sowing"]["PlantDensity"] = plant_density
                         templates["cultivation-method"]["worksteps"] = [templates["static-sowing"]] + templates["rest-worksteps"]
                         env["cropRotation"] = []
                         for year in sorted(year_to_onset.keys()):
-                            cm = templates["cultivation-method"].deepcopy()
+                            cm = copy.deepcopy(templates["cultivation-method"])
                             onset_date = (date(2017, 1, 1) + timedelta(days=year_to_onset[year]-1)).strftime("0000-%m-%d")
                             cm["worksteps"][0]["date"] = onset_date
                             env["cropRotation"].append(cm)
@@ -338,8 +328,8 @@ def main():
                     + "|" + str(rcp) \
                     + "|" + adaptation_option["sowing"] \
                     + "|" + adaptation_option["fertilizer"] \
-                    + "|" + adaptation_option["plant-density"] \
-                    + "|" + adaptation_option["cycle-length"]
+                    + "|" + adaptation_option["cycle-length"] \
+                    + "|" + str(elevation) \
 
                     socket.send_json(env) 
                     print "sent env ", sent_env_count, " customId: ", env["customId"]

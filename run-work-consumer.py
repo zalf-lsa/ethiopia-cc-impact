@@ -104,12 +104,12 @@ def create_output(result, lat, lon):
 
     return out
 
-def write_data(path_to_out_dir, rows, cultivar, rcp, sowing, fertilizer, plant_density, cycle_length):
+def write_data(path_to_out_dir, rows, cultivar, rcp, sowing, fertilizer, cycle_length):
     "write data"
 
     sowing_shortcut = "-".join(map(lambda x: x[:3], sowing.split("/")))
     path_to_file = path_to_out_dir + cultivar + "_" + rcp + "_s-" + sowing_shortcut \
-    + "_f-" + fertilizer[:3] + "_p-" + plant_density[:3] + "_c-" + cycle_length[:3] + ".csv"
+    + "_f-" + fertilizer[:3] + "_c-" + cycle_length[:3] + ".csv"
 
     if not os.path.isfile(path_to_file):
         with open(path_to_file, "w") as _:
@@ -126,8 +126,8 @@ def main():
 
     config = {
         "port": "7777",
-        "server": "cluster3", #"10.10.26.34", #"cluster3",
-        "user": "berg-lc"
+        "server": "cluster2", 
+        "user": "fikadu"
     }
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
@@ -165,13 +165,13 @@ def main():
             rcp = ci_parts[3]
             sowing = ci_parts[4]
             fertilizer = ci_parts[5]
-            plant_density = ci_parts[6]
-            cycle_length = ci_parts[7]
+            cycle_length = ci_parts[6]
+            elevation = ci_parts[7]
 
             print "received work result", received_envs_count, "customId:", result.get("customId", "")
 
             out = create_output(result, lat, lon)
-            write_data(paths["local-path-to-output-dir"], out, cultivar, rcp, sowing, fertilizer, plant_density, cycle_length)
+            write_data(paths["local-path-to-output-dir"], out, cultivar, rcp, sowing, fertilizer, cycle_length)
 
             received_envs_count = received_envs_count + 1
         
