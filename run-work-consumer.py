@@ -48,7 +48,7 @@ PATHS = {
     }
 }
 
-def create_output(result, lat, lon):
+def create_output(result, lat, lon, elevation):
     "create output structure for single run"
 
     year_to_vals = defaultdict(dict)
@@ -87,19 +87,39 @@ def create_output(result, lat, lon):
         out.append([
             lat,
             lon,
+            elevation,
             vals.get("Year", "NA"),
+            vals.get("sow-doy", "NA"),
+            vals.get("flow-doy", "NA"),
+            vals.get("mat-doy", "NA"),
+            vals.get("harv-doy", "NA"),
+            vals.get("harv-stage", "NA"),
             vals.get("yield", "NA"),
+            vals.get("abbiom-harv", "NA"),
+            vals.get("LAImax", "NA"),
             vals.get("applied-N", "NA"),
             vals.get("N-leaching", "NA"),
             vals.get("N-uptake", "NA"),
             vals.get("cycle-length", "NA"),
+            vals.get("precip-sum", "NA"),
+            vals.get("TraDefavg", "NA"),
             vals.get("TraDef1", "NA"),
             vals.get("TraDef2", "NA"),
             vals.get("TraDef3", "NA"),
             vals.get("TraDef4", "NA"),
             vals.get("TraDef5", "NA"),
             vals.get("TraDef6", "NA"),
-            vals.get("TraDef7", "NA")
+            vals.get("TraDef7", "NA"),
+            vals.get("act-transp", "NA"),
+            vals.get("act-ET", "NA"),
+            vals.get("NDefavg", "NA"),
+            vals.get("NDef1", "NA"),
+            vals.get("NDef2", "NA"),
+            vals.get("NDef3", "NA"),
+            vals.get("NDef4", "NA"),
+            vals.get("NDef5", "NA"),
+            vals.get("NDef6", "NA"),
+            vals.get("NDef7", "NA")
         ])
 
     return out
@@ -109,11 +129,11 @@ def write_data(path_to_out_dir, rows, cultivar, rcp, sowing, fertilizer, cycle_l
 
     sowing_shortcut = "-".join(map(lambda x: x[:3], sowing.split("/")))
     path_to_file = path_to_out_dir + cultivar + "_" + rcp + "_s-" + sowing_shortcut \
-    + "_f-" + fertilizer[:3] + "_c-" + cycle_length[:3] + ".csv"
+    + "_f-" + fertilizer + "_c-" + cycle_length[:3] + ".csv"
 
     if not os.path.isfile(path_to_file):
         with open(path_to_file, "w") as _:
-            _.write("year, yield, applied-N, N-leaching, N-uptake, cycle-length, TraDef1, TraDef2, TraDef3, TraDef4, TraDef5, TraDef6, TraDef7\n")
+            _.write("lat, lon, elevation, year, sow-doy, flow-doy, mat-doy, harv-doy, harv-stage, yield, abbiom-harv, LAImax, applied-N, N-leaching, N-uptake, cycle-length, precip-sum, TraDefavg, TraDef1, TraDef2, TraDef3, TraDef4, TraDef5, TraDef6, TraDef7, act-transp, act-ET, NDefavg, NDef1, NDef2, NDef3, NDef4, NDef5, NDef6, NDef7\n")
 
     with open(path_to_file, 'ab') as _:
         writer = csv.writer(_, delimiter=",")
@@ -125,9 +145,9 @@ def main():
     "collect data from workers"
 
     config = {
-        "port": "7777",
+        "port": "7778",
         "server": "cluster2", 
-        "user": "fikadu"
+        "user": "stella"
     }
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
@@ -170,7 +190,7 @@ def main():
 
             print "received work result", received_envs_count, "customId:", result.get("customId", "")
 
-            out = create_output(result, lat, lon)
+            out = create_output(result, lat, lon, elevation)
             write_data(paths["local-path-to-output-dir"], out, cultivar, rcp, sowing, fertilizer, cycle_length)
 
             received_envs_count = received_envs_count + 1

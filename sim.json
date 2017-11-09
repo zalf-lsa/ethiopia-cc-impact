@@ -36,44 +36,63 @@
 		"events": [
 			"crop", [
 				["Year", "LAST"],
+				["DOY|sow-doy", "FIRST"],
+				["DOY|harv-doy", "LAST"],
+				["Stage|harv-stage", "LAST"],
+				["AbBiom|abbiom-harv", "LAST"],
+				["LAI|LAImax", "MAX"],
 				["Yield|yield", "LAST"],
 				["NFert|applied-N", "SUM"],
 				["NLeach|N-leaching", "SUM"],
 				["SumNUp|N-uptake", "LAST"],
-				["Count|cycle-length", "SUM"]
+				["Precip|precip-sum", "SUM"],
+				["Count|cycle-length", "SUM"],
+				["Tra|act-transp", "SUM"],
+				["Act_ET|act-ET", "SUM"],
+				["TraDef|TraDefavg", "AVG"],
+				["NDef|NDefavg", "AVG"]
 			],
 			{"while": ["Stage", "=", 1]},[
 				["Year", "LAST"],
-				["TraDef|TraDef1", "AVG"]
+				["TraDef|TraDef1", "AVG"],
+				["NDef|NDef1", "AVG"]
 			],
 
 			{"while": ["Stage", "=", 2]},[
 				["Year", "LAST"],
-				["TraDef|TraDef2", "AVG"]
+				["TraDef|TraDef2", "AVG"],
+				["NDef|NDef2", "AVG"]
 			],
 
 			{"while": ["Stage", "=", 3]},[
 				["Year", "LAST"],
-				["TraDef|TraDef3", "AVG"]
+				["TraDef|TraDef3", "AVG"],
+				["NDef|NDef3", "AVG"]
 			],
 
 			{"while": ["Stage", "=", 4]},[
 				["Year", "LAST"],
-				["TraDef|TraDef4", "AVG"]
+				["TraDef|TraDef4", "AVG"],
+				["NDef|NDef4", "AVG"]
 			],
 
 			{"while": ["Stage", "=", 5]},[
 				["Year", "LAST"],
-				["TraDef|TraDef5", "AVG"]
+				["TraDef|TraDef5", "AVG"],
+				["NDef|NDef5", "AVG"],
+				["DOY|flow-doy", "FIRST"]
 			],
 
 			{"while": ["Stage", "=", 6]},[
 				["Year", "LAST"],
-				["TraDef|TraDef6", "AVG"]
+				["TraDef|TraDef6", "AVG"],
+				["NDef|NDef6", "AVG"]
 			],
 			{"while": ["Stage", "=", 7]},[
 				["Year", "LAST"],
-				["TraDef|TraDef7", "AVG"]
+				["TraDef|TraDef7", "AVG"],
+				["NDef|NDef7", "AVG"],
+				["DOY|mat-doy", "FIRST"]
 			]		
 		]
 	},
@@ -84,7 +103,7 @@
 	"UseSecondaryYields": true,
 	"NitrogenResponseOn": true,
 	"WaterDeficitResponseOn": true,
-	"EmergenceMoistureControlOn": false,
+	"EmergenceMoistureControlOn": true,
 	"EmergenceFloodingControlOn": false,
 
 	"UseAutomaticIrrigation": true,

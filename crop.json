@@ -48,14 +48,7 @@
 			"crop": "",
 			"PlantDensity": 7
 		},
-		"rest-worksteps": [
-			{
-				"type": "MineralFertilization",
-				"amount": [0, "kg N"],
-				"partition": ["ref", "fert-params", "AN"],
-				"after": "Sowing",
-				"days": 1
-			},
+		"mineral-fertilization": [
 			{
 				"type": "MineralFertilization",
 				"amount": [0, "kg N"],
@@ -69,17 +62,33 @@
 				"partition": ["ref", "fert-params", "U"],
 				"after": "Sowing",
 				"days": 30
-			},
-			{ 
-			   "type": "AutomaticHarvest", 
-			   "latest-date": "0000-12-31",
-			   "min-%-asw": 0,
-			   "max-%-asw": 150,
-			   "max-3d-precip-sum": 999,
-			   "max-curr-day-precip": 999,
-			   "harvest-time": "maturity"
-		   }
+			}
 		],
+		"NDemand-fertilization": [
+			{
+				"type": "NDemandFertilization",
+				"stage": 1,
+				"partition": ["ref", "fert-params", "U"],
+				"N-demand": [0, "kg"],
+				"depth": [0.6, "m"]
+			},
+			{
+				"type": "NDemandFertilization",
+				"stage": 3,
+				"partition": ["ref", "fert-params", "U"],
+				"N-demand": [0, "kg"],
+				"depth": [0.6, "m"]
+			}
+		],
+		"automatic-harvest": {
+			"type": "AutomaticHarvest", 
+			"latest-date": "0000-12-31",
+			"min-%-asw": 0,
+			"max-%-asw": 150,
+			"max-3d-precip-sum": 999,
+			"max-curr-day-precip": 999,
+			"harvest-time": "maturity"
+		},
 		"cultivation-method": {
 			"worksteps": []
 		}

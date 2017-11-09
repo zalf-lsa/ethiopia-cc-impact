@@ -42,8 +42,9 @@ PATHS = {
     },
     "stella": {
         "include-file-base-path": "C:/Users/stella/Documents/GitHub",
-        "local-path-to-archive": "Z:/projects/carbiocial/",
-        "local-path-to-repository": "C:/Users/stella/Documents/GitHub/carbiocial-2017/"
+        "local-path-to-archive": "Z:/data/ethiopia/",
+        "local-path-to-repository": "C:/Users/stella/Documents/GitHub/ethiopia-cc-impact/",
+        "cluster-path-to-archive": "/archiv-daten/md/data/ethiopia/"
     },
     "berg-xps15": {
         "include-file-base-path": "C:/Users/berg.ZALF-AD/GitHub",
@@ -64,9 +65,9 @@ def main():
     "main function"
 
     config = {
-        "port": "6666",
+        "port": "6667",
         "server": "cluster2",
-        "user": "fikadu",
+        "user": "stella",
         "local-paths": "false"
     }
     if len(sys.argv) > 1:
@@ -94,14 +95,39 @@ def main():
     sim["include-file-base-path"] = paths["include-file-base-path"]
 
     rcps = [
-        "baseline",
-        "rcp2p6",
-        "rcp4p5",
-        "rcp6p0",
-        "rcp8p5"
+        "baseline"#,
+        #"rcp2p6",
+        #"rcp4p5",
+        #"rcp6p0",
+        #"rcp8p5"
     ]
 
     sorghum_varieties = ["meko", "teshale"]
+
+    wgs84 = Proj(init="epsg:4326")
+    utm37n = Proj(init="epsg:20137")
+
+    def create_crop_probability_interpolator(path_to_csv_file, wgs84, utm37n):
+        "create interpolation object from some dir with climate data"
+        points = []
+        values = []
+
+        with open(path_to_csv_file) as _:
+            reader = csv.reader(_)
+            reader.next()
+            for line in reader:
+                lon = float(line[5])
+                lat = float(line[6])
+                prob = float(line[7])
+
+                r, h = transform(wgs84, utm37n, lon, lat)
+                #xlon, xlat = transform(utm37n, wgs84, r, h)
+                points.append([r, h])
+                values.append(prob)
+
+        return NearestNDInterpolator(np.array(points), np.array(values))
+
+    interpol_crop_prob = create_crop_probability_interpolator(paths["local-path-to-archive"] + "Ethiopia_crop_land_prob.csv", wgs84, utm37n)
 
     def create_climate_interpolator(path_to_climate_dir, scenario, wgs84, utm37n):
         "create interpolation object from some dir with climate data"
@@ -118,14 +144,13 @@ def main():
 
             r, h = transform(wgs84, utm37n, lon, lat)
             #xlon, xlat = transform(utm37n, wgs84, r, h)
-            points.append([h, r])
+            points.append([r, h])
             values.append((lat, lon))
             #print "lat:", lat, "lon:", lon, "h:", h, "r:", r, "val:", values[len(values)-1]
 
         return NearestNDInterpolator(np.array(points), np.array(values))
 
-    wgs84 = Proj(init="epsg:4326")
-    utm37n = Proj(init="epsg:20137")
+    
     interpol_climate = create_climate_interpolator(paths["local-path-to-archive"] + "climate/ipsl-cm5a-lr/", "baseline", wgs84, utm37n)
 
 
@@ -163,7 +188,7 @@ def main():
                 value = float(line[2])
                 r, h = transform(wgs84, utm37n, lon, lat)
                 #xlon, xlat = transform(utm37n, wgs84, r, h)
-                points.append([h, r])
+                points.append([r, h])
                 values.append(value)
                 #print "lat:", lat, "lon:", lon, "h:", h, "r:", r, "val:", values[len(values)-1]
 
@@ -194,15 +219,29 @@ def main():
         "teshale": env["cropRotation"].pop("teshale"),
         "automatic-sowing": env["cropRotation"].pop("automatic-sowing"),
         "static-sowing": env["cropRotation"].pop("static-sowing"),
-        "rest-worksteps": env["cropRotation"].pop("rest-worksteps"),
+        "mineral-fertilization":  env["cropRotation"].pop("mineral-fertilization"),
+        "NDemand-fertilization":  env["cropRotation"].pop("NDemand-fertilization"),
+        "automatic-harvest":  env["cropRotation"].pop("automatic-harvest"),
         "cultivation-method": env["cropRotation"].pop("cultivation-method")
     }
     env["cropRotation"] = []
     
 
     adaptation_options = []
-    for sowing in ["recommended/dynamic-elevation-onsets", "calculated-onsets", "recommended/avg-static-elevation-onsets"]:
-        for n_fert in ["recommended"]:#, "auto"]:
+    for sowing in [#"recommended/dynamic-elevation-onsets", 
+                    #"calculated-onsets",
+                    "recommended/avg-static-elevation-onsets"]:
+        for n_fert in [#"recommended",
+                        "NDemand_20",
+                        "NDemand_30",
+                        "NDemand_40",
+                        "NDemand_50",
+                        "NDemand_60",
+                        "NDemand_70",
+                        "NDemand_80",
+                        "NDemand_90",
+                        "NDemand_100",
+                        ]:#, "auto"]:
             for cycle_length in ["standard"]:#, "longer"]:
                 adaptation_options.append({
                     "sowing": sowing,
@@ -214,17 +253,17 @@ def main():
         "<1600": { 
             "onsets": {"from": date(2017, 6, 10), "to": date(2017, 6, 30)},
             "plant-density": {"from": 8, "to": 13},
-            "fertilizer": {"N": 46, "U": 46}
+            "fertilizer": {"N": 46}
         },
         "=>1600&<=1900": { 
             "onsets": {"from": date(2017, 5, 1), "to": date(2017, 5, 15)},
             "plant-density": {"from": 9, "to": 12},
-            "fertilizer": {"N": 50, "U": 75}
+            "fertilizer": {"N": 50}
         },
         ">1900": { 
             "onsets": {"from": date(2017, 4, 15), "to": date(2017, 5, 10)},
             "plant-density": {"from": 7, "to": 10},
-            "fertilizer": {"N": 57, "U": 69}
+            "fertilizer": {"N": 57}
         },
     }
 
@@ -258,9 +297,13 @@ def main():
                 for (lat, lon), profile in profiles.iteritems():
 
                     sr, sh = transform(wgs84, utm37n, lon, lat)
-                    (clat, clon) = interpol_climate(sh, sr)
-                    slope = interpol_slope(sh, sr)
-                    elevation = interpol_elevation(sh, sr)
+                    prob = interpol_crop_prob(sr, sh)
+                    if prob < 40:
+                        continue
+
+                    (clat, clon) = interpol_climate(sr, sh)
+                    slope = interpol_slope(sr, sh)
+                    elevation = interpol_elevation(sr, sh)
 
                     env["params"]["siteParameters"]["SoilProfileParameters"] = profile
                     env["params"]["siteParameters"]["Latitude"] = lat
@@ -268,13 +311,17 @@ def main():
                     env["params"]["siteParameters"]["HeightNN"] = elevation
 
                     # set fertilization
+                    fertilizations = []
                     if adaptation_option["fertilizer"] == "recommended":
                         fert = elevation_range(elevation)["fertilizer"]
-                        templates["rest-worksteps"][0]["amount"][0] = fert["N"]
-                        templates["rest-worksteps"][1]["amount"][0] = float(fert["U"]) / 2
-                        templates["rest-worksteps"][2]["amount"][0] = float(fert["U"]) / 2
-                    elif adaptation_option["fertilizer"] == "auto":
-                        print "fertilizer auto: to be done"
+                        templates["mineral-fertilization"][0]["amount"][0] = float(fert["N"]) /2
+                        templates["mineral-fertilization"][1]["amount"][0] = float(fert["N"]) /2
+                        fertilizations = templates["mineral-fertilization"]
+                    elif "NDemand" in adaptation_option["fertilizer"]:
+                        Ndem = float(adaptation_option["fertilizer"].split("_")[1])
+                        templates["NDemand-fertilization"][0]["N-demand"][0] = Ndem
+                        templates["NDemand-fertilization"][1]["N-demand"][0] = Ndem
+                        fertilizations = templates["NDemand-fertilization"]
 
                     # set cycle length
                     if adaptation_option["cycle-length"] == "standard":
@@ -286,7 +333,7 @@ def main():
                     if adaptation_option["sowing"] == "recommended/avg-static-elevation-onsets":
                         templates["static-sowing"]["crop"] = templates[variety]
                         templates["static-sowing"]["date"] = avg_static_elevation_onsets(elevation)
-                        templates["cultivation-method"]["worksteps"] = [templates["static-sowing"]] + templates["rest-worksteps"]
+                        templates["cultivation-method"]["worksteps"] = [templates["static-sowing"]] + fertilizations + [templates["automatic-harvest"]]
                         env["cropRotation"] = [templates["cultivation-method"]]
 
                     elif adaptation_option["sowing"] == "recommended/dynamic-elevation-onsets":
@@ -294,13 +341,13 @@ def main():
                         dates = elevation_range(elevation)["onsets"]
                         templates["automatic-sowing"]["earliest-date"] = dates["from"].strftime("0000-%m-%d")
                         templates["automatic-sowing"]["latest-date"] = dates["to"].strftime("0000-%m-%d")
-                        templates["cultivation-method"]["worksteps"] = [templates["automatic-sowing"]] + templates["rest-worksteps"]
+                        templates["cultivation-method"]["worksteps"] = [templates["automatic-sowing"]] + fertilizations + [templates["automatic-harvest"]]
                         env["cropRotation"] = [templates["cultivation-method"]]
 
                     elif adaptation_option["sowing"] == "calculated-onsets":
                         year_to_onset = onsets[(clat, clon)]
                         templates["static-sowing"]["crop"] = templates[variety]
-                        templates["cultivation-method"]["worksteps"] = [templates["static-sowing"]] + templates["rest-worksteps"]
+                        templates["cultivation-method"]["worksteps"] = [templates["static-sowing"]] + fertilizations + [templates["automatic-harvest"]]
                         env["cropRotation"] = []
                         for year in sorted(year_to_onset.keys()):
                             cm = copy.deepcopy(templates["cultivation-method"])
