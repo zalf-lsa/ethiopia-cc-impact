@@ -28,7 +28,7 @@ def main():
     "simply empty queue"
 
     config = {
-        "port": "7777",
+        "port": "7778",
         "server": "cluster2"
     }
     if len(sys.argv) > 1:

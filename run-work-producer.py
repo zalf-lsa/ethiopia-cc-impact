@@ -228,19 +228,20 @@ def main():
     
 
     adaptation_options = []
-    for sowing in [#"recommended/dynamic-elevation-onsets", 
-                    #"calculated-onsets",
+    for sowing in ["recommended/dynamic-elevation-onsets", 
+                    "calculated-onsets",
                     "recommended/avg-static-elevation-onsets"]:
-        for n_fert in [#"recommended",
-                        "NDemand_20",
-                        "NDemand_30",
-                        "NDemand_40",
-                        "NDemand_50",
-                        "NDemand_60",
-                        "NDemand_70",
-                        "NDemand_80",
-                        "NDemand_90",
-                        "NDemand_100",
+        for n_fert in ["recommended",
+                        "targetN"
+                        #"NDemand_20",
+                        #"NDemand_30",
+                        #"NDemand_40",
+                        #"NDemand_50",
+                        #"NDemand_60",
+                        #"NDemand_70",
+                        #"NDemand_80",
+                        #"NDemand_90",
+                        #"NDemand_100",
                         ]:#, "auto"]:
             for cycle_length in ["standard"]:#, "longer"]:
                 adaptation_options.append({
@@ -253,17 +254,20 @@ def main():
         "<1600": { 
             "onsets": {"from": date(2017, 6, 10), "to": date(2017, 6, 30)},
             "plant-density": {"from": 8, "to": 13},
-            "fertilizer": {"N": 46}
+            "fertilizer": {"N": 46},
+            "target_soilN": 60
         },
         "=>1600&<=1900": { 
             "onsets": {"from": date(2017, 5, 1), "to": date(2017, 5, 15)},
             "plant-density": {"from": 9, "to": 12},
-            "fertilizer": {"N": 50}
+            "fertilizer": {"N": 50},
+            "target_soilN": 60
         },
         ">1900": { 
             "onsets": {"from": date(2017, 4, 15), "to": date(2017, 5, 10)},
             "plant-density": {"from": 7, "to": 10},
-            "fertilizer": {"N": 57}
+            "fertilizer": {"N": 57},
+            "target_soilN": 70
         },
     }
 
@@ -318,9 +322,15 @@ def main():
                         templates["mineral-fertilization"][1]["amount"][0] = float(fert["N"]) /2
                         fertilizations = templates["mineral-fertilization"]
                     elif "NDemand" in adaptation_option["fertilizer"]:
+                        #this strategy should be used to design adaptation options
                         Ndem = float(adaptation_option["fertilizer"].split("_")[1])
                         templates["NDemand-fertilization"][0]["N-demand"][0] = Ndem
                         templates["NDemand-fertilization"][1]["N-demand"][0] = Ndem
+                        fertilizations = templates["NDemand-fertilization"]
+                    elif "targetN" in adaptation_option["fertilizer"]:
+                        target_Ndem = elevation_range(elevation)["target_soilN"]
+                        templates["NDemand-fertilization"][0]["N-demand"][0] = target_Ndem
+                        templates["NDemand-fertilization"][1]["N-demand"][0] = target_Ndem
                         fertilizations = templates["NDemand-fertilization"]
 
                     # set cycle length
