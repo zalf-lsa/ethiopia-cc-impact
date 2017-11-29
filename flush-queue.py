@@ -28,8 +28,8 @@ def main():
     "simply empty queue"
 
     config = {
-        "port": "7778",
-        "server": "cluster2"
+        "port": "7777",
+        "server": "cluster1"
     }
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:

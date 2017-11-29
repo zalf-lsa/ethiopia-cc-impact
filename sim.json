@@ -29,11 +29,17 @@
 			"daily", [
 				"Date",
 				"Crop",
+				"LAI",
+				"Yield",
+				"AbBiom",
+				"NDef",
 				"TraDef"
 			]
 		],
 
 		"events": [
+			
+
 			"crop", [
 				["Year", "LAST"],
 				["DOY|sow-doy", "FIRST"],
@@ -50,7 +56,8 @@
 				["Tra|act-transp", "SUM"],
 				["Act_ET|act-ET", "SUM"],
 				["TraDef|TraDefavg", "AVG"],
-				["NDef|NDefavg", "AVG"]
+				["NDef|NDefavg", "AVG"],
+				["Tavg", "AVG"]
 			],
 			{"while": ["Stage", "=", 1]},[
 				["Year", "LAST"],
@@ -101,7 +108,7 @@
 	"LayerThickness": [0.1, "m"],
 
 	"UseSecondaryYields": true,
-	"NitrogenResponseOn": true,
+	"NitrogenResponseOn": false,
 	"WaterDeficitResponseOn": true,
 	"EmergenceMoistureControlOn": true,
 	"EmergenceFloodingControlOn": false,

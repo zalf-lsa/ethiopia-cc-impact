@@ -65,9 +65,9 @@ def main():
     "main function"
 
     config = {
-        "port": "6667",
-        "server": "cluster2",
-        "user": "stella",
+        "port": "6666",
+        "server": "cluster1",
+        "user": "fikadu",
         "local-paths": "false"
     }
     if len(sys.argv) > 1:
@@ -95,14 +95,14 @@ def main():
     sim["include-file-base-path"] = paths["include-file-base-path"]
 
     rcps = [
-        "baseline"#,
-        #"rcp2p6",
+        #"baseline",
+        "rcp2p6",
         #"rcp4p5",
         #"rcp6p0",
         #"rcp8p5"
     ]
 
-    sorghum_varieties = ["meko", "teshale"]
+    sorghum_varieties = ["meko"] #, "teshale"]
 
     wgs84 = Proj(init="epsg:4326")
     utm37n = Proj(init="epsg:20137")
@@ -228,11 +228,12 @@ def main():
     
 
     adaptation_options = []
-    for sowing in ["recommended/dynamic-elevation-onsets", 
+    for sowing in [#"recommended/dynamic-elevation-onsets", 
                     "calculated-onsets",
-                    "recommended/avg-static-elevation-onsets"]:
+                    #"recommended/avg-static-elevation-onsets"
+                    ]:
         for n_fert in ["recommended",
-                        "targetN"
+                        #"targetN"
                         #"NDemand_20",
                         #"NDemand_30",
                         #"NDemand_40",
