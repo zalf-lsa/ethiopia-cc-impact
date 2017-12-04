@@ -65,8 +65,8 @@ def main():
     "main function"
 
     config = {
-        "port": "6667",
-        "server": "cluster2",
+        "port": "6666",
+        "server": "cluster1",
         "user": "stella",
         "local-paths": "false"
     }
@@ -102,7 +102,7 @@ def main():
         #"rcp8p5"
     ]
 
-    sorghum_varieties = ["meko", "teshale"]
+    sorghum_varieties = ["meko"]#, "teshale"]
 
     wgs84 = Proj(init="epsg:4326")
     utm37n = Proj(init="epsg:20137")
@@ -228,11 +228,11 @@ def main():
     
 
     adaptation_options = []
-    for sowing in ["recommended/dynamic-elevation-onsets", 
-                    "calculated-onsets",
-                    "recommended/avg-static-elevation-onsets"]:
+    for sowing in ["recommended/dynamic-elevation-onsets"]:#, 
+                    #"calculated-onsets"]:#,
+                    #"recommended/avg-static-elevation-onsets"]:
         for n_fert in ["recommended",
-                        "targetN"
+                        #"targetN"
                         #"NDemand_20",
                         #"NDemand_30",
                         #"NDemand_40",

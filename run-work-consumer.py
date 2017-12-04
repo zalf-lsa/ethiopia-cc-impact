@@ -90,10 +90,12 @@ def create_output(result, lat, lon, elevation):
             elevation,
             vals.get("Year", "NA"),
             vals.get("sow-doy", "NA"),
+            vals.get("em-doy", "NA"),
             vals.get("flow-doy", "NA"),
             vals.get("mat-doy", "NA"),
             vals.get("harv-doy", "NA"),
             vals.get("harv-stage", "NA"),
+            vals.get("Tavg", "NA"),
             vals.get("yield", "NA"),
             vals.get("abbiom-harv", "NA"),
             vals.get("LAImax", "NA"),
@@ -133,7 +135,7 @@ def write_data(path_to_out_dir, rows, cultivar, rcp, sowing, fertilizer, cycle_l
 
     if not os.path.isfile(path_to_file):
         with open(path_to_file, "w") as _:
-            _.write("lat, lon, elevation, year, sow-doy, flow-doy, mat-doy, harv-doy, harv-stage, yield, abbiom-harv, LAImax, applied-N, N-leaching, N-uptake, cycle-length, precip-sum, TraDefavg, TraDef1, TraDef2, TraDef3, TraDef4, TraDef5, TraDef6, TraDef7, act-transp, act-ET, NDefavg, NDef1, NDef2, NDef3, NDef4, NDef5, NDef6, NDef7\n")
+            _.write("lat, lon, elevation, year, sow-doy, em-doy, flow-doy, mat-doy, harv-doy, harv-stage, crop-Tavg, yield, abbiom-harv, LAImax, applied-N, N-leaching, N-uptake, cycle-length, precip-sum, TraDefavg, TraDef1, TraDef2, TraDef3, TraDef4, TraDef5, TraDef6, TraDef7, act-transp, act-ET, NDefavg, NDef1, NDef2, NDef3, NDef4, NDef5, NDef6, NDef7\n")
 
     with open(path_to_file, 'ab') as _:
         writer = csv.writer(_, delimiter=",")
@@ -145,8 +147,8 @@ def main():
     "collect data from workers"
 
     config = {
-        "port": "7778",
-        "server": "cluster2", 
+        "port": "7777",
+        "server": "cluster1", 
         "user": "stella"
     }
     if len(sys.argv) > 1:

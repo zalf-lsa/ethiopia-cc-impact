@@ -3,8 +3,29 @@
 		"Meko": {
 			"is-winter-crop": false,
 			"cropParams": {
-				"species": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/sorghum.json"],
-				"cultivar": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/Meko.json"]
+				"species": {
+					"=": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/sorghum.json"],
+					"TransitionStageLeafExp": -1
+				},
+				"cultivar": {
+					"=": ["include-from-file", "monica-parameters/projects/ethiopia-cc-impact/Meko.json"],
+					"RefLeafExp": 25,
+					"MinTempDev_WE": 0,
+					"OptTempDev_WE": 25,
+					"MaxTempDev_WE": 42,
+					"____StageTemperatureSum":[  
+										[  
+										115,
+										396,
+										366,  
+										441, 
+										354,
+										246, 
+										25
+										],
+										"°C d"
+									]
+				}
 			},
 			"residueParams": ["include-from-file", "monica-parameters/crop-residues/sorghum.json"]
 		},
@@ -94,5 +115,9 @@
 		}
 	},
 
-	"CropParameters": ["include-from-file", "monica-parameters/general/crop.json"]
+	"CropParameters": {
+		"=": ["include-from-file", "monica-parameters/general/crop.json"],
+		"__enable_T_response_leaf_expansion__": false,
+		"__enable_Phenology_WangEngelTemperatureResponse__": false
+	}
 }
