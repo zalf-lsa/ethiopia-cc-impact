@@ -29,11 +29,17 @@
 			"daily", [
 				"Date",
 				"Crop",
+				"LAI",
+				"Yield",
+				"AbBiom",
+				"NDef",
 				"TraDef"
 			]
 		],
 
 		"events": [
+			
+
 			"crop", [
 				["Year", "LAST"],
 				["DOY|sow-doy", "FIRST"],

@@ -95,8 +95,8 @@ def main():
     sim["include-file-base-path"] = paths["include-file-base-path"]
 
     rcps = [
-        "baseline"#,
-        #"rcp2p6",
+        #"baseline",
+        "rcp2p6",
         #"rcp4p5",
         #"rcp6p0",
         #"rcp8p5"
@@ -228,9 +228,9 @@ def main():
     
 
     adaptation_options = []
-    for sowing in ["recommended/dynamic-elevation-onsets"]:#, 
-                    #"calculated-onsets"]:#,
-                    #"recommended/avg-static-elevation-onsets"]:
+    for sowing in ["recommended/dynamic-elevation-onsets", 
+                    "calculated-onsets",
+                    "recommended/avg-static-elevation-onsets"]:
         for n_fert in ["recommended",
                         #"targetN"
                         #"NDemand_20",
